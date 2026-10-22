@@ -1,0 +1,67 @@
+thread
+true	42
+dead
+false	cannot resume dead coroutine
+true	1
+suspended
+true	2
+suspended
+true	done
+dead
+true	7	12
+true	p	q
+false	cannot resume dead coroutine
+true	A	2	B	C
+true	end
+true
+true	1
+inside	running
+type-running	thread
+true	paused
+suspended
+false	tests/differential/corpus/c07-coroutines.lua:58: co-err
+dead
+false	cannot resume dead coroutine
+false	table
+true	false	tests/differential/corpus/c07-coroutines.lua:69: inner
+dead
+true	7
+true	boolean	x
+dead
+true	inner
+true	fin
+true
+dead
+true	y1
+true	got
+true	0
+iter	1
+true	1
+iter	2
+true	2
+iter	3
+true	loop-done
+6
+20
+false	cannot resume dead coroutine
+only
+false	cannot resume dead coroutine
+false	tests/differential/corpus/c07-coroutines.lua:129: wrap-err
+wy
+wrapped:true
+true	in-1
+true	in-2
+true	out-1
+true	out-2
+true	false	cannot resume non-suspended coroutine
+true	self
+thread
+false	attempt to yield from outside a coroutine
+false	attempt to yield from outside a coroutine
+fail	cannot resume dead coroutine
+52	done50
+true
+dead
+true	false	cannot resume dead coroutine
+true	suspended
+function	nil

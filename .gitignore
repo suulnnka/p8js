@@ -1,0 +1,27 @@
+# dependencies
+node_modules/
+
+# build output (regenerate with: npm run build)
+dist/
+
+# scratch area for converted carts / probes / logs (tools write here by default)
+.out/
+
+# native toolchain build products (rebuild with: npm run build:native)
+native/build/
+
+# browser automation / editor caches
+.playwright-cli/
+*.tsbuildinfo
+
+# logs
+*.log
+
+# carts / cart content never get tracked (copyright hygiene), wherever they
+# land — except p8js's own test fixtures (written for this project)
+*.p8
+*.p8.png
+*.p8c
+!tests/fixtures/*.p8
+
+carts/

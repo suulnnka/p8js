@@ -1,0 +1,24 @@
+{
+  "name": "p8js",
+  "private": true,
+  "type": "module",
+  "version": "0.0.1",
+  "description": "Web-based PICO-8 emulator: z8lua bytecode pipeline + TypeScript VM",
+  "license": "MIT",
+  "scripts": {
+    "test": "vitest run",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "convert": "tsx tools/convert.ts",
+    "convert:all": "tsx scripts/convert-all.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "pngjs": "^7.0.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0",
+    "vite": "^7.0.0",
+    "vitest": "^5.0.5"
+  }
+}

@@ -1,0 +1,96 @@
+t-l1
+stack traceback:
+	[C]: in function 'traceback'
+	tests/differential/corpus/c10-traceback.lua:4: in function <tests/differential/corpus/c10-traceback.lua:4>
+	(...tail calls...)
+	tests/differential/corpus/c10-traceback.lua:7: in main chunk
+	[C]: in ?
+stack traceback:
+	tests/differential/corpus/c10-traceback.lua:10: in function 't0'
+	tests/differential/corpus/c10-traceback.lua:11: in main chunk
+	[C]: in ?
+true	cross-native
+stack traceback:
+	[C]: in function 'traceback'
+	tests/differential/corpus/c10-traceback.lua:14: in function <tests/differential/corpus/c10-traceback.lua:14>
+	[C]: in function 'pcall'
+	tests/differential/corpus/c10-traceback.lua:15: in main chunk
+	[C]: in ?
+false	tests/differential/corpus/c10-traceback.lua:19: deep-fail
+stack traceback:
+	[C]: in function 'traceback'
+	tests/differential/corpus/c10-traceback.lua:22: in function <tests/differential/corpus/c10-traceback.lua:21>
+	[C]: in function 'error'
+	tests/differential/corpus/c10-traceback.lua:19: in function 'fail'
+	tests/differential/corpus/c10-traceback.lua:20: in function <tests/differential/corpus/c10-traceback.lua:18>
+	[C]: in function 'xpcall'
+	tests/differential/corpus/c10-traceback.lua:18: in main chunk
+	[C]: in ?
+false	tests/differential/corpus/c10-traceback.lua:27: at-a
+stack traceback:
+	tests/differential/corpus/c10-traceback.lua:32: in function <tests/differential/corpus/c10-traceback.lua:31>
+	[C]: in function 'error'
+	tests/differential/corpus/c10-traceback.lua:27: in function <tests/differential/corpus/c10-traceback.lua:27>
+	(...tail calls...)
+	tests/differential/corpus/c10-traceback.lua:30: in function <tests/differential/corpus/c10-traceback.lua:26>
+	[C]: in function 'xpcall'
+	tests/differential/corpus/c10-traceback.lua:26: in main chunk
+	[C]: in ?
+L0
+stack traceback:
+	[C]: in function 'traceback'
+	tests/differential/corpus/c10-traceback.lua:36: in function 'pick'
+	tests/differential/corpus/c10-traceback.lua:37: in main chunk
+	[C]: in ?
+L1
+stack traceback:
+	tests/differential/corpus/c10-traceback.lua:36: in function 'pick'
+	tests/differential/corpus/c10-traceback.lua:38: in main chunk
+	[C]: in ?
+L2
+stack traceback:
+	tests/differential/corpus/c10-traceback.lua:39: in main chunk
+	[C]: in ?
+L5
+stack traceback:
+L99
+stack traceback:
+from-main
+stack traceback:
+	[C]: in function 'yield'
+	tests/differential/corpus/c10-traceback.lua:45: in function <tests/differential/corpus/c10-traceback.lua:44>
+string
+msg2
+stack traceback:
+	[C]: in function 'yield'
+	tests/differential/corpus/c10-traceback.lua:45: in function <tests/differential/corpus/c10-traceback.lua:44>
+after-dead
+stack traceback:
+false	tests/differential/corpus/c10-traceback.lua:56: at-e1
+false	tests/differential/corpus/c10-traceback.lua:65: mm-add
+false	tests/differential/corpus/c10-traceback.lua:71: iter-boom
+false	tests/differential/corpus/c10-traceback.lua:75: cmp-boom
+false	tests/differential/corpus/c10-traceback.lua:78: gsub-boom
+false	tests/differential/corpus/c10-traceback.lua:81: idx-boom
+false	tests/differential/corpus/c10-traceback.lua:85: assert-here
+false	tests/differential/corpus/c10-traceback.lua:90: lv2
+true	false	tests/differential/corpus/c10-traceback.lua:90: lv2
+true	bottom
+stack traceback:
+	[C]: in function 'traceback'
+	tests/differential/corpus/c10-traceback.lua:97: in function <tests/differential/corpus/c10-traceback.lua:96>
+	(...tail calls...)
+	[C]: in function 'pcall'
+	tests/differential/corpus/c10-traceback.lua:100: in main chunk
+	[C]: in ?
+5
+false	nopos
+false	withpos
+false	tests/differential/corpus/c10-traceback.lua:116: withpos1
+false	12345
+false	true
+false	nil
+true	post-yield
+stack traceback:
+	[C]: in function 'traceback'
+	tests/differential/corpus/c10-traceback.lua:126: in function <tests/differential/corpus/c10-traceback.lua:124>

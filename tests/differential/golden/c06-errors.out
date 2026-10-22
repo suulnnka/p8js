@@ -1,0 +1,131 @@
+false	tests/differential/corpus/c06-errors.lua:4: attempt to index local 'x' (a nil value)
+false	tests/differential/corpus/c06-errors.lua:5: attempt to call local 't' (a table value)
+false	tests/differential/corpus/c06-errors.lua:6: attempt to call local 'f' (a nil value)
+false	tests/differential/corpus/c06-errors.lua:7: attempt to call global 'no_such_fn' (a nil value)
+false	tests/differential/corpus/c06-errors.lua:8: attempt to perform arithmetic on a nil value
+false	tests/differential/corpus/c06-errors.lua:9: attempt to perform arithmetic on a string value
+false	tests/differential/corpus/c06-errors.lua:10: attempt to compare table with number
+false	tests/differential/corpus/c06-errors.lua:11: attempt to compare number with string
+false	tests/differential/corpus/c06-errors.lua:12: attempt to concatenate a table value
+false	tests/differential/corpus/c06-errors.lua:13: attempt to get length of a nil value
+false	tests/differential/corpus/c06-errors.lua:14: attempt to perform arithmetic on a string value
+false	tests/differential/corpus/c06-errors.lua:18: attempt to call upvalue 'upf' (a nil value)
+false	tests/differential/corpus/c06-errors.lua:20: attempt to perform arithmetic on upvalue 'upn' (a nil value)
+false	tests/differential/corpus/c06-errors.lua:24: attempt to index field 'deep' (a nil value)
+false	tests/differential/corpus/c06-errors.lua:25: attempt to call field 'deep' (a nil value)
+false	tests/differential/corpus/c06-errors.lua:28: attempt to call method 'missing' (a nil value)
+false	tests/differential/corpus/c06-errors.lua:29: attempt to call method 'missing_field' (a nil value)
+false	tests/differential/corpus/c06-errors.lua:32: attempt to perform arithmetic on a nil value
+false	tests/differential/corpus/c06-errors.lua:33: attempt to concatenate a boolean value
+false	tests/differential/corpus/c06-errors.lua:36: attempt to call local 't' (a table value)
+false	tests/differential/corpus/c06-errors.lua:37: attempt to call a number value
+false	tests/differential/corpus/c06-errors.lua:38: attempt to call a nil value
+false	tests/differential/corpus/c06-errors.lua:39: attempt to call local 'mt' (a table value)
+false	tests/differential/corpus/c06-errors.lua:42: 'for' initial value must be a number
+false	tests/differential/corpus/c06-errors.lua:43: 'for' limit must be a number
+false	tests/differential/corpus/c06-errors.lua:44: 'for' step must be a number
+false	tests/differential/corpus/c06-errors.lua:47: table index is nil
+false	tests/differential/corpus/c06-errors.lua:48: table index is nil
+false	tests/differential/corpus/c06-errors.lua:51: attempt to compare two table values
+false	tests/differential/corpus/c06-errors.lua:52: attempt to compare two boolean values
+false	tests/differential/corpus/c06-errors.lua:53: attempt to compare two nil values
+false	tests/differential/corpus/c06-errors.lua:54: attempt to compare nil with table
+false	tests/differential/corpus/c06-errors.lua:55: attempt to compare string with number
+false	tests/differential/corpus/c06-errors.lua:58: plain
+false	wrapped
+false	direct
+false	leveled
+false	lv2-outer
+true	false	tests/differential/corpus/c06-errors.lua:65: x
+false	nil
+false	42
+false	true
+false
+false	assertion failed!
+true	true
+false	assertion failed!
+false	custom
+false	123
+2
+true	1	2
+false	got:tests/differential/corpus/c06-errors.lua:83: boom
+false	42
+false	nil
+false	table
+true	false	error in error handling
+true	false	error in error handling
+true	false	error in error handling
+false	tests/differential/corpus/c06-errors.lua:90: n!
+false	bad argument #2 to 'xpcall' (value expected)
+false	tests/differential/corpus/c06-errors.lua:92: zero-level
+true	tests/differential/corpus/c06-errors.lua:97: inner-err
+true	1	2	3
+true
+pcalled-print
+true
+true
+true	1
+false	bad argument #1 to 'string.rep' (string expected, got no value)
+false	bad argument #1 to 'string.sub' (string expected, got no value)
+false	bad argument #1 to 'table.insert' (table expected, got no value)
+true	nil
+false	bad argument #1 to 'select' (number expected, got no value)
+false	bad argument #2 to 'setmetatable' (nil or table expected)
+false	bad argument #1 to 'setmetatable' (table expected, got number)
+true	nil
+false	bad argument #1 to 'string.char' (number expected, got string)
+false	bad argument #1 to 'coroutine.resume' (coroutine expected)
+false	bad argument #1 to 'coroutine.status' (coroutine expected)
+true	5
+false	bad argument #2 to 'string.rep' (number expected, got string)
+true	5
+true	false	tests/differential/corpus/c06-errors.lua:132: layered
+false	true
+top
+stack traceback:
+	tests/differential/corpus/c06-errors.lua:141: in main chunk
+	[C]: in ?
+at-tb2
+stack traceback:
+	[C]: in function 'traceback'
+	tests/differential/corpus/c06-errors.lua:142: in function 'tb2'
+	tests/differential/corpus/c06-errors.lua:143: in main chunk
+	[C]: in ?
+lv0
+stack traceback:
+	[C]: in function 'traceback'
+	tests/differential/corpus/c06-errors.lua:144: in main chunk
+	[C]: in ?
+stack traceback:
+	tests/differential/corpus/c06-errors.lua:145: in main chunk
+	[C]: in ?
+stack traceback:
+	[C]: in function 'traceback'
+	tests/differential/corpus/c06-errors.lua:146: in main chunk
+	[C]: in ?
+5
+stack traceback:
+	tests/differential/corpus/c06-errors.lua:147: in main chunk
+	[C]: in ?
+function
+false	tests/differential/corpus/c06-errors.lua:151: tb-err
+stack traceback:
+	[C]: in function 'traceback'
+	tests/differential/corpus/c06-errors.lua:152: in function <tests/differential/corpus/c06-errors.lua:151>
+	[C]: in function 'error'
+	tests/differential/corpus/c06-errors.lua:151: in function <tests/differential/corpus/c06-errors.lua:151>
+	[C]: in function 'xpcall'
+	tests/differential/corpus/c06-errors.lua:151: in main chunk
+	[C]: in ?
+d1
+stack traceback:
+	[C]: in function 'traceback'
+	tests/differential/corpus/c06-errors.lua:156: in function <tests/differential/corpus/c06-errors.lua:156>
+	(...tail calls...)
+	tests/differential/corpus/c06-errors.lua:159: in main chunk
+	[C]: in ?
+false	malformed pattern (ends with '%')
+false	malformed pattern (missing ']')
+false	malformed pattern (ends with '%')
+false	invalid capture index %1
+false	bad argument #2 to 'string.format' (no value)

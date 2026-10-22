@@ -1,0 +1,74 @@
+3	10	20	30
+120	2	100	102	200	240
+1	2	3	s	ten	nil
+4
+2	4
+0	3	120	0
+5	0	1
+4	4
+0	1	4	5
+0	1	99	2	6
+4
+5	3
+0
+1	4
+false	wrong number of arguments to 'insert'
+false	bad argument #2 to 'table.insert' (position out of bounds)
+false	bad argument #1 to 'table.remove' (position out of bounds)
+true	nil
+1-2-3
+bc
+b,c
+
+
+x
+1
+true	1 a
+false	invalid value (boolean) at index 1 in table for 'concat'
+4	1	two	4	nil
+1	2	3
+2	3
+2	3
+
+3
+0
+1	2	3	4	5
+5	4	3	2	1
+1,1,1,2,2,3,3
+apple,apple,banana,fig,pear
+fig,pear,apple,apple,banana
+42
+1	2
+0,1,2,3,4,5,6,7,8,9,10
+true
+true
+false	bad argument #2 to 'table.sort' (function expected, got number)
+false	bad argument #1 to 'table.sort' (table expected, got string)
+1=5 2=6 3=7 
+0
+nil
+false	invalid key to 'next'
+1	5
+2	6
+true	nil
+false	invalid key to 'next'
+ip	1	a
+ip	2	b
+ip	3	c
+false	bad argument #1 to 'ipairs' (table expected, got number)
+false	bad argument #1 to 'ipairs' (table expected, got no value)
+false	bad argument #1 to 'pairs' (table expected, got no value)
+1	nil
+two	2
+true	false	true	true
+3	4
+false	table index is nil
+false	bad argument #1 to 'rawget' (table expected, got number)
+false	bad argument #1 to 'rawlen' (table or string expected)
+one2
+zero	nil
+false	tests/differential/corpus/c03-tables.lua:147: table index is nil
+true
+byid	nil
+yes	no
+num	num

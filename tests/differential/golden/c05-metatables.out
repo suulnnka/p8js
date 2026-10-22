@@ -1,0 +1,60 @@
+fn:anything	fn:1
+hi	5	nil
+hi	5
+1	1
+set!
+written	written	nil
+new
+false	tests/differential/corpus/c05-metatables.lua:40: should not fire
+7
+false	tests/differential/corpus/c05-metatables.lua:48: attempt to perform arithmetic on local 'a' (a nil value)
+false	tests/differential/corpus/c05-metatables.lua:52: attempt to call a number value
+99	3
+0	3
+false	true	true	false
+true	false	true	false
+false
+false	tests/differential/corpus/c05-metatables.lua:63: attempt to index local 'b' (a number value)
+false	tests/differential/corpus/c05-metatables.lua:63: attempt to index local 'a' (a number value)
+false	tests/differential/corpus/c05-metatables.lua:64: attempt to compare number with nil
+CAT	CAT	xCAT
+false	tests/differential/corpus/c05-metatables.lua:78: attempt to concatenate a table value
+false	tests/differential/corpus/c05-metatables.lua:79: attempt to concatenate a table value
+negated
+add	add	add
+sub	mul	div	mod	pow
+idiv	band	bor	bxor
+shl	shr	lshr	rotl	rotr
+bnot
+band	bor	bxor	shl	shr	lshr
+false	tests/differential/corpus/c05-metatables.lua:119: attempt to perform arithmetic on upvalue 'std' (a table value)
+false	tests/differential/corpus/c05-metatables.lua:120: attempt to perform arithmetic on upvalue 'std' (a table value)
+false	tests/differential/corpus/c05-metatables.lua:121: attempt to perform arithmetic on upvalue 'std' (a table value)
+false	tests/differential/corpus/c05-metatables.lua:122: attempt to perform arithmetic on upvalue 'std' (a table value)
+false	tests/differential/corpus/c05-metatables.lua:123: attempt to perform arithmetic on upvalue 'std' (a table value)
+false	tests/differential/corpus/c05-metatables.lua:124: attempt to perform arithmetic on upvalue 'std' (a table value)
+true	add
+true	add
+TS!
+val: TS!
+string
+false	tests/differential/corpus/c05-metatables.lua:137: in-index
+false	tests/differential/corpus/c05-metatables.lua:140: in-add
+false	tests/differential/corpus/c05-metatables.lua:148: loop in gettable
+locked
+false	cannot change a protected metatable
+true
+table
+true
+nil
+nil
+nil
+nil
+42
+pp	1	10
+pp	2	20
+pi	1	10
+pi	2	20
+p
+entry	99
+nil

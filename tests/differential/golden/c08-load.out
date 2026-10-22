@@ -1,0 +1,25 @@
+7
+function
+101
+20	4	4	2	8
+15
+A	nil
+Z	B
+false	tests/differential/corpus/c08-load.lua:51: from-loaded
+false	tests/differential/corpus/c08-load.lua:51: from-loaded
+nil	binary string: version mismatch in precompiled chunk
+nil	binary string: truncated precompiled chunk
+false	bad argument #1 to 'load' (function expected, got nil)
+false	bad argument #1 to 'load' (function expected, got boolean)
+from-reader
+true	nil	reader function must return a string
+string
+3	1	2
+0	nil	nil
+false	tests/differential/corpus/c08-load.lua:93: attempt to index local 'z' (a nil value)
+false	bad argument #1 to 'load' (function expected, got nil)
+false	bad argument #1 to 'load' (function expected, got boolean)
+false	unable to dump given function
+false	bad argument #1 to 'string.dump' (function expected, got table)
+false	bad argument #1 to 'string.dump' (function expected, got no value)
+2	3	4

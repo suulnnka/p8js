@@ -1,0 +1,4 @@
+[submodule "z8lua"]
+	path = z8lua
+	url = git@github.com:suulnnka/z8lua.git
+	branch = p8js

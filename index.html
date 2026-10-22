@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>p8js — PICO-8 in the browser</title>
+    <style>
+      :root { color-scheme: dark; }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+        background: #101018;
+        color: #cde;
+        font: 13px/1.5 system-ui, "PingFang SC", "Microsoft YaHei", sans-serif;
+      }
+      header { padding: 14px 16px 0; text-align: center; }
+      header h1 { margin: 0; font-size: 16px; font-weight: 600; color: #fff; }
+      header p { margin: 4px 0 0; color: #889; font-size: 12px; }
+      #stage {
+        position: relative;
+        width: min(90vw, 768px);
+        aspect-ratio: 1;
+        background: #000;
+        border: 2px solid #334;
+        border-radius: 6px;
+        overflow: hidden;
+      }
+      #screen {
+        width: 100%;
+        height: 100%;
+        image-rendering: pixelated;
+        image-rendering: crisp-edges;
+        display: block;
+        touch-action: none;
+      }
+      #stage.drop { border-color: #6cf; box-shadow: 0 0 0 3px #6cf3; }
+      #overlay {
+        position: absolute;
+        inset: 0;
+        display: none;
+        place-content: center;
+        text-align: center;
+        padding: 24px;
+        background: #000c;
+        white-space: pre-wrap;
+        color: #f88;
+        font-family: ui-monospace, Consolas, monospace;
+        font-size: 12px;
+      }
+      #overlay.show { display: grid; }
+      .bar { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; align-items: center; }
+      button, .filebtn {
+        background: #1c2230;
+        color: #cde;
+        border: 1px solid #345;
+        border-radius: 5px;
+        padding: 6px 12px;
+        font: inherit;
+        cursor: pointer;
+      }
+      button:hover, .filebtn:hover { background: #263048; }
+      input[type="file"] { display: none; }
+      #stats { color: #7ad; font-family: ui-monospace, Consolas, monospace; min-width: 170px; }
+      #console {
+        width: min(90vw, 768px);
+        height: 120px;
+        overflow-y: auto;
+        background: #0a0d14;
+        border: 1px solid #223;
+        border-radius: 6px;
+        padding: 6px 8px;
+        font-family: ui-monospace, Consolas, monospace;
+        font-size: 11px;
+        color: #9ab;
+        white-space: pre-wrap;
+        word-break: break-all;
+      }
+      footer { color: #556; font-size: 11px; padding-bottom: 16px; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>p8js</h1>
+      <p>网页版 PICO-8 模拟器 · 拖入或选择 .p8c 卡带 · 方向键 + Z/X（X=🅾 Z=❎）Esc=菜单键</p>
+    </header>
+
+    <div id="stage">
+      <canvas id="screen" width="128" height="128"></canvas>
+      <div id="overlay">拖入 .p8c 文件或点击下方“打开卡带”</div>
+    </div>
+
+    <div class="bar">
+      <label class="filebtn">打开卡带<input id="file" type="file" accept=".p8c" /></label>
+      <button id="reset" type="button">重启卡带</button>
+      <button id="fs" type="button">全屏</button>
+      <span id="stats">fps --</span>
+    </div>
+
+    <div id="console"></div>
+
+    <footer>p8js · z8lua bytecode VM</footer>
+    <script type="module" src="/src/web/main.ts"></script>
+  </body>
+</html>

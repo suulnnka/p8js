@@ -1,0 +1,63 @@
+1	2	3
+initial
+changed
+2
+1	2	3
+false	inside
+1	0
+1	2	2	3
+6
+
+1
+1	2	3
+0	1	2	3
+p	x
+1	2	3
+1
+2	3
+3	1	3
+5
+42
+10
+false	tests/differential/corpus/c04-closures.lua:83: attempt to call method 'upper' (a nil value)
+end
+true	false
+popopopopo
+200
+55
+22
+5
+36
+0
+false	tests/differential/corpus/c04-closures.lua:127: 'for' initial value must be a number
+false	tests/differential/corpus/c04-closures.lua:128: 'for' limit must be a number
+false	tests/differential/corpus/c04-closures.lua:129: 'for' step must be a number
+16
+gv	1
+gv	2
+gv	3
+gv	4
+gi	1	x
+gi	2	y
+false	tests/differential/corpus/c04-closures.lua:149: iter
+5
+3
+7
+2
+A	B	C	D
+5
+7
+ne-ok
+100
+3
+false
+false	tests/differential/corpus/c04-closures.lua:206: deep
+false	table
+3
+c	d
+c
+false	bad argument #1 to 'select' (index out of range)
+true
+1	2	2
+true	true	false	false
+3	4
