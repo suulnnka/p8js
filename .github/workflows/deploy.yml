@@ -1,0 +1,68 @@
+name: build & deploy pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # .gitmodules uses the SSH URL; anonymous CI needs the HTTPS rewrite
+      - name: submodule over https
+        run: git config --global url."https://github.com/".insteadOf "git@github.com:"
+
+      - name: build p8luac
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y libreadline-dev
+          bash native/build.sh
+
+      - name: install deps
+        run: npm ci
+
+      - name: build web
+        run: npm run build
+
+      - name: convert carts
+        run: |
+          shopt -s nullglob
+          for p8 in carts/*.p8; do
+            npx tsx tools/convert.ts "$p8" -o "dist/$(basename "${p8%.p8}").p8c"
+          done
+
+      - uses: actions/configure-pages@v5
+        with:
+          enablement: true
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

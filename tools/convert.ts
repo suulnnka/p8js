@@ -82,14 +82,19 @@ function defaultOutput(input: string): string {
 }
 
 export function compileBytecode(source: string, chunkName: string): Buffer {
-  const wslP8luac = toWslPath(P8LUAC_WINDOWS);
   // stdin mode with the chunk name as argv[2] (WSL does not reliably
-  // forward custom environment variables).
-  const res = spawnSync("wsl.exe", ["-d", WSL_DISTRO, "--", wslP8luac, "-", chunkName], {
-    input: Buffer.from(source, "latin1"),
-    maxBuffer: 64 * 1024 * 1024,
-    windowsHide: true,
-  });
+  // forward custom environment variables). Windows has no native toolchain
+  // and routes through WSL; Linux/CI runs the binary directly.
+  const res = process.platform === "win32"
+    ? spawnSync("wsl.exe", ["-d", WSL_DISTRO, "--", toWslPath(P8LUAC_WINDOWS), "-", chunkName], {
+        input: Buffer.from(source, "latin1"),
+        maxBuffer: 64 * 1024 * 1024,
+        windowsHide: true,
+      })
+    : spawnSync(P8LUAC_WINDOWS, ["-", chunkName], {
+        input: Buffer.from(source, "latin1"),
+        maxBuffer: 64 * 1024 * 1024,
+      });
   if (res.error) throw res.error;
   if (res.status !== 0) {
     const err = (res.stderr ?? Buffer.alloc(0)).toString("utf8").trim();

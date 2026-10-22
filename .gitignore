@@ -24,4 +24,5 @@ native/build/
 *.p8c
 !tests/fixtures/*.p8
 
-carts/
+carts/*
+!carts/demo.p8

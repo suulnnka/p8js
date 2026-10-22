@@ -4,6 +4,8 @@ import { defineConfig } from "vite";
 // p8js web shell. The VM/core are plain TS with .ts import specifiers
 // (allowImportingTsExtensions) — Vite handles them natively.
 export default defineConfig({
+  // relative base so the build works under GitHub Pages project subpaths
+  base: "./",
   build: {
     target: "es2022",
     // keep bios.bc as a static asset via ?url imports
