@@ -191,12 +191,17 @@ export class Emulator {
         // vm.cpp:1193-1225 — pause-menu policy is host-side; P3 has no menu,
         // so only the input state machine runs here.
         this.input.update(this.pendingInput);
-        // The edges were just consumed — drop them so they can't fire again
-        // on a later sample. Level fields (kHeld/mouse) stay; the platform
-        // re-feeds them every tick.
+        // The edges and motion deltas were just consumed — drop them so they
+        // can't fire again on a later sample. Level fields (kHeld/mouse x/y/
+        // buttons) stay; the platform re-feeds them every tick.
         this.pendingInput.kDown = 0;
         this.pendingInput.kbDown = false;
         this.pendingInput.kbKey = "";
+        this.pendingInput.mouseDX = 0;
+        this.pendingInput.mouseDY = 0;
+        this.pendingInput.mouseWheelH = 0;
+        this.pendingInput.mouseWheel = 0;
+        this.pendingInput.mouseClicked = false;
       },
       hookRun: () => {
         // fake-08 vm_run restarts immediately; restarting from inside a Lua
@@ -375,16 +380,21 @@ export class Emulator {
    */
   tick(input: HostInputState = EMPTY_HOST_INPUT): boolean {
     if (!this.biosRan) return false;
-    // Latch button edges (and the keyboard buffer) until the bios's
-    // _update_buttons consumes them: the 30fps glue only samples input every
-    // other frame, so a 1-frame platform edge would be dropped ~50% of the
-    // time (KNOWN-GAPS §6.2). Level fields always carry the latest sample.
+    // Latch button edges (and the keyboard buffer / mouse motion) until the
+    // bios's _update_buttons consumes them: the 30fps glue only samples input
+    // every other frame, so a 1-frame platform edge would be dropped ~50% of
+    // the time (KNOWN-GAPS §6.2). Level fields always carry the latest sample.
     this.pendingInput = {
       kDown: this.pendingInput.kDown | input.kDown,
       kHeld: input.kHeld,
       mouseX: input.mouseX,
       mouseY: input.mouseY,
       mouseBtns: input.mouseBtns,
+      mouseDX: this.pendingInput.mouseDX + input.mouseDX,
+      mouseDY: this.pendingInput.mouseDY + input.mouseDY,
+      mouseWheelH: this.pendingInput.mouseWheelH + input.mouseWheelH,
+      mouseWheel: this.pendingInput.mouseWheel + input.mouseWheel,
+      mouseClicked: input.mouseClicked || this.pendingInput.mouseClicked,
       kbDown: input.kbDown || this.pendingInput.kbDown,
       kbKey: input.kbKey || this.pendingInput.kbKey,
     };

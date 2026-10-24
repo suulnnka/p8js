@@ -278,6 +278,15 @@ function makeSystemFns(ctx: ApiContext): [string, NativeFn][] {
       case 32: return [fx.fromInt(input.mouseX)];
       case 33: return [fx.fromInt(input.mouseY)];
       case 34: return [fx.fromInt(input.mouseBtns)];
+      // official 0.2.4 devkit mouse protocol (fake-08 stops at 34; POOM's
+      // menu reads 38/39): horizontal wheel px / wheel event / click accel /
+      // relative movement in host desktop pixels. Motion fields are zeroed
+      // by Input unless the cart set the matching 0x5f2d flag bits.
+      case 35: return [fx.fromInt(input.mouseWheelH)];
+      case 36: return [fx.fromInt(input.mouseWheel)];
+      case 37: return [fx.fromInt(input.mouseAccel)];
+      case 38: return [fx.fromInt(input.mouseDX)];
+      case 39: return [fx.fromInt(input.mouseDY)];
       case 90: return [fx.fromInt(new Date().getFullYear())];
       case 91: return [fx.fromInt(new Date().getMonth() + 1)];
       case 92: return [fx.fromInt(new Date().getDate())];

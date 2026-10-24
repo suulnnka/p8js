@@ -75,19 +75,36 @@ window.addEventListener("keydown", onKeyDown);
 window.addEventListener("keyup", onKeyUp);
 
 // ---------------------------------------------------------------------------
-// pointer → devkit mouse (stat(32)/stat(33)/stat(34)); Input.update only
-// forwards mouse/keyboard while devkitMode (poke(0x5f2d,1)) is set, same as
-// fake-08. stat(34) buttons: bit0 left, bit1 right, bit2 middle.
+// pointer → devkit mouse (stat(32)/stat(33)/stat(34), motion stat(38)/stat(39),
+// wheel stat(35)/stat(36)); Input.update only forwards mouse/keyboard while
+// devkitMode (poke(0x5f2d,…)) has the 0x1 bit set, same as fake-08.
+// stat(34) buttons: bit0 left, bit1 right, bit2 middle. Motion deltas are
+// accumulated between logic steps and consumed per _update_buttons sample
+// (official 0.2.4 semantics; POOM's menu drives off stat(38)/stat(39)).
 
 let mouseX = 0;
 let mouseY = 0;
 let mouseBtns = 0;
+let mouseDX = 0;
+let mouseDY = 0;
+let mouseWheelH = 0;
+let mouseWheel = 0;
+let mouseClicked = false;
+let lastPointerX: number | null = null;
+let lastPointerY: number | null = null;
 
 function pointerBit(e: PointerEvent): number {
   return e.button === 2 ? 2 : e.button === 1 ? 4 : 1;
 }
 
 function trackPointer(e: PointerEvent): void {
+  if (lastPointerX !== null && lastPointerY !== null) {
+    // host desktop pixels, exactly what stat(38/39) promise
+    mouseDX += e.clientX - lastPointerX;
+    mouseDY += e.clientY - lastPointerY;
+  }
+  lastPointerX = e.clientX;
+  lastPointerY = e.clientY;
   const r = canvas.getBoundingClientRect();
   mouseX = Math.max(0, Math.min(127, Math.floor(((e.clientX - r.left) / r.width) * 128)));
   mouseY = Math.max(0, Math.min(127, Math.floor(((e.clientY - r.top) / r.height) * 128)));
@@ -97,15 +114,30 @@ canvas.addEventListener("pointermove", trackPointer);
 canvas.addEventListener("pointerdown", (e) => {
   trackPointer(e);
   mouseBtns |= pointerBit(e);
+  mouseClicked = true;
 });
 window.addEventListener("pointerup", (e) => {
+  trackPointer(e);
   mouseBtns &= ~pointerBit(e);
+});
+// wheel: stat(35) horizontal px, stat(36) net roll (1 up / -1 down). Not
+// preventDefault'ed — the page still scrolls, the cart still sees the wheel.
+canvas.addEventListener("wheel", (e) => {
+  mouseWheelH += e.deltaX;
+  mouseWheel += e.deltaY < 0 ? 1 : e.deltaY > 0 ? -1 : 0;
 });
 // dragging on the canvas shouldn't open the browser context menu or scroll
 canvas.addEventListener("contextmenu", (e) => e.preventDefault());
-// losing focus must not stick keys
+// the cursor leaving the canvas ends the motion segment — keep the window
+// between-events diff valid (otherwise the next entry jumps across the gap)
+canvas.addEventListener("pointerleave", () => {
+  lastPointerX = null;
+  lastPointerY = null;
+});
+// losing focus must not stick keys or buttons
 window.addEventListener("blur", () => {
   heldMask = 0;
+  mouseBtns = 0;
 });
 
 function sampleInput(): HostInputState {
@@ -115,10 +147,20 @@ function sampleInput(): HostInputState {
     mouseX,
     mouseY,
     mouseBtns,
+    mouseDX,
+    mouseDY,
+    mouseWheelH,
+    mouseWheel,
+    mouseClicked,
     kbDown: false,
     kbKey: "",
   };
   edgeMask = 0;
+  mouseDX = 0;
+  mouseDY = 0;
+  mouseWheelH = 0;
+  mouseWheel = 0;
+  mouseClicked = false;
   return state;
 }
 
@@ -257,10 +299,13 @@ async function initAudio(): Promise<void> {
 window.addEventListener("keydown", () => void initAudio(), { once: true });
 window.addEventListener("pointerdown", () => void initAudio(), { once: true });
 
-/** Render one host frame worth of PCM and hand it to the worklet. */
-function pumpAudio(): void {
+/** Render one presenter frame worth of PCM and hand it to the worklet.
+ *  Proportional to real elapsed time — generating a fixed amount per rAF call
+ *  ties music pitch to the display refresh rate (50Hz panel → 17% slow with
+ *  constant underruns, 144Hz → 2.4x fast). */
+function pumpAudio(dtMs: number): void {
   if (!emu || !audioNode) return;
-  audioAcc += AUDIO_RATE / 60;
+  audioAcc += (AUDIO_RATE * Math.min(dtMs, 100)) / 1000;
   const n = Math.floor(audioAcc);
   if (n <= 0) return;
   audioAcc -= n;
@@ -272,19 +317,25 @@ function pumpAudio(): void {
 }
 
 // ---------------------------------------------------------------------------
-// main loop: 60Hz logic steps on a wall-clock timer, present per rAF.
+// main loop: everything hangs off requestAnimationFrame with a real-time
+// accumulator.
 //
-// Stepping used to hang off requestAnimationFrame with a fixed 1/60s
-// accumulator, which tied cart speed to the display refresh rate — on a
-// ~50Hz panel a 30fps cart ran 17% slow with uneven 1/2-step cadence
-// (KNOWN-GAPS §6.1). The step clock is now rAF-independent; rAF only
-// presents the latest framebuffer and pumps audio.
+// The logic clock used to be a chained setTimeout at a nominal 60Hz with rAF
+// only presenting — but timer chains are the first thing browsers throttle
+// (occluded webviews, background tabs, energy savers), which collapses the
+// game to a few fps (reproduced at fps 5; KNOWN-GAPS §7). rAF is the one clock
+// that keeps firing while the page is actually shown, and with the ACTUAL
+// frame delta fed into the accumulator the step rate averages 60/s on any
+// display (50Hz/60Hz/144Hz) — unlike the pre-§6.1 code that assumed one step
+// per rAF. When rAF stops (tab hidden) the game pauses, which is what a
+// console would do; the 250ms dt clamp and step cap keep a return-from-
+// background catch-up bounded.
 
 const STEP_MS = 1000 / 60;
 let acc = 0;
-let lastStep = performance.now();
+let lastRaf = 0;
 let fpsSteps = 0;
-let fpsClock = performance.now();
+let fpsClock = 0;
 let fpsShown = 0;
 /** set when the cart errors — logic freezes, last frame keeps presenting */
 let frozen = false;
@@ -301,27 +352,27 @@ function stepOnce(): void {
   }
 }
 
-function stepLoop(): void {
-  const now = performance.now();
-  acc += now - lastStep;
-  lastStep = now;
-  // catch up at most 4 steps (throttled-timer spikes, e.g. hidden tab)
-  let n = 0;
-  while (acc >= STEP_MS && n < 4) {
+function frame(now: number): void {
+  requestAnimationFrame(frame);
+  if (lastRaf === 0) {
+    lastRaf = now;
+    fpsClock = now;
+  }
+  const dt = Math.min(now - lastRaf, 250);
+  lastRaf = now;
+  acc += dt;
+  let steps = 0;
+  while (acc >= STEP_MS && steps < 8) {
     acc -= STEP_MS;
     stepOnce();
     fpsSteps++;
-    n++;
+    steps++;
   }
-  if (acc > STEP_MS * 4) acc = 0;
-  // chained timer aimed at the next step boundary; setTimeout clamping
-  // (~4ms) is absorbed by the accumulator
-  setTimeout(stepLoop, Math.max(0, STEP_MS - (performance.now() - now)));
-}
+  // backlog beyond the catch-up cap is dropped, not accumulated forever
+  if (acc > STEP_MS * 8) acc = 0;
 
-function frame(now: number): void {
   present();
-  pumpAudio();
+  pumpAudio(dt);
 
   if (now - fpsClock >= 500) {
     fpsShown = Math.round((fpsSteps * 1000) / (now - fpsClock));
@@ -330,14 +381,12 @@ function frame(now: number): void {
     const name = currentCart ? "cart" : "idle";
     statsEl.textContent = `fps ${fpsShown} · ${name}`;
   }
-  requestAnimationFrame(frame);
 }
 
 async function main(): Promise<void> {
   const res = await fetch(biosUrl);
   biosBytes = new Uint8Array(await res.arrayBuffer());
   bootEmu();
-  setTimeout(stepLoop, STEP_MS);
   requestAnimationFrame(frame);
 }
 

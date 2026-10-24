@@ -5,7 +5,7 @@
 //   npx tsx tools/convert.ts <cart.p8|cart.p8.png> [-o out.p8c]
 //                            [--no-source] [--no-label] [--keep-source-file]
 
-import { readFileSync, writeFileSync } from "node:fs";
+import { accessSync, readFileSync, writeFileSync } from "node:fs";
 import { basename, dirname, extname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { spawnSync } from "node:child_process";
@@ -160,7 +160,30 @@ export async function convertCart(
   input: string,
   opts: ConvertOptions,
 ): Promise<ConvertResult> {
-  const raw = readFileSync(input);
+  // BBS carts saved as .p8 text (version 41+) compress the gfx/gff/map/sfx
+  // sections with a variable-length hex encoding whose leading-zero stripping
+  // is information-lossy in reverse ("80" = [0x80] or [0x08, 0x00]) — the
+  // text loader cannot recover the exact bytes. The .p8.png encodes the same
+  // cart losslessly and is what the BBS player / pico-ios run, so when a
+  // sibling .p8.png exists, prefer it for the resource ROM.
+  let effectiveInput = input;
+  if (/\.p8$/i.test(input)) {
+    const pngSibling = input.replace(/\.p8$/i, ".p8.png");
+    try {
+      accessSync(pngSibling);
+      console.log(
+        `convert: ${basename(input)} has a sibling ${basename(pngSibling)}`,
+      );
+      console.log(
+        "  → using the .p8.png (the .p8 v41+ compressed data sections are lossy; lua is identical)",
+      );
+      effectiveInput = pngSibling;
+    } catch {
+      // no sibling png — decode the text cart
+    }
+  }
+
+  const raw = readFileSync(effectiveInput);
 
   let cart: ParsedCart;
   if (raw.length >= 8 && raw[0] === 0x89 && raw[1] === 0x50) {

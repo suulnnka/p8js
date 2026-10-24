@@ -77,10 +77,9 @@ P8C1 头字段不变(pico-8 version/flags/rom_len…)
 - [x] **鼠标支持**:canvas pointer 事件 + 128×128 坐标折算喂 `sampleInput()`(核心 stat(32-34) 原本就绪,仍受 devkitMode 门控)。
 - [x] **动态画面平滑度**(蔚蓝反馈):逻辑步进从 rAF 挂钩改为独立 60Hz 墙钟定时器,速度不再绑定显示刷新率;rAF 只做 present/音频。实测页面前台 fps 62(此前 ~50)。
 
-## 3. 待查问题(2026-10-22 用户真实浏览器复测,**按用户要求不查不修**,仅记录)
+## 3. 待查问题(2026-10-22 用户真实浏览器复测 → **2026-10-24 已全部定位修复**,详见 docs/KNOWN-GAPS.md §7)
 
-> §6 修复后用户复测仍报告;细节缺失,未排查。详见 `docs/KNOWN-GAPS.md` §7。
-
-- [ ] **渲染表现不对**(细节未知)。
-- [ ] **鼠标仍然无法使用**(指针接线已修但用户复测不可用;注意 devkitMode 门控是设计行为)。
-- [ ] **POOM 移动时表现不对**(细节未知;引擎卡已能进入并渲染)。
+- [x] **渲染表现不对**:双层根因——①主循环 setTimeout 链被浏览器节流(复现 fps 5),已改 rAF + 真实增量累积;②v41+ .p8 文本压缩段解码错误导致 gfx/map 花块,转换已改为优先孪生 .p8.png(文本格式信息有损,详见 KNOWN-GAPS §7.2)。
+- [x] **鼠标仍然无法使用**:stat(35-39)(官方 0.2.4 devkit 鼠标协议)未实现——POOM 菜单靠 stat(38/39) 逐帧位移。已实现 + 0x5f2d 位域门控 + host 增量锁存(tests/mouse-protocol.test.ts)。
+- [x] **POOM 移动时表现不对**:7.1/7.2 的叠加 → 已用官方 standalone 包(28 张子卡源,SDK 旧格式段无歧义)重融 public/poomm.p8c,标题/菜单/换卡/引擎 3D 全流程验证通过(KNOWN-GAPS §7.4)。
+- [ ] **backrooms 关卡卡**:`if cond do` 0.2.4+ 语法 z8lua 不支持(同 dead_east-0),需 p8luac 方言补丁后 merge(level+journal 两卡,见 KNOWN-GAPS §7.5);主卡 pico_backrooms 已入库 public/。

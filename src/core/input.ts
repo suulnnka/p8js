@@ -14,6 +14,16 @@ export interface HostInputState {
   mouseX: number;
   mouseY: number;
   mouseBtns: number;
+  /** mouse movement since the previous _update_buttons sample, host pixels
+   *  (stat(38)/stat(39) — official 0.2.4 devkit protocol) */
+  mouseDX: number;
+  mouseDY: number;
+  /** horizontal wheel pixels accumulated since the last sample (stat(35)) */
+  mouseWheelH: number;
+  /** vertical wheel, net notches: 1 up / -1 down (stat(36)) */
+  mouseWheel: number;
+  /** a button-down happened since the last sample (stat(37) → 4) */
+  mouseClicked: boolean;
   kbDown: boolean;
   kbKey: string;
 }
@@ -24,9 +34,21 @@ export const EMPTY_HOST_INPUT: HostInputState = {
   mouseX: 0,
   mouseY: 0,
   mouseBtns: 0,
+  mouseDX: 0,
+  mouseDY: 0,
+  mouseWheelH: 0,
+  mouseWheel: 0,
+  mouseClicked: false,
   kbDown: false,
   kbKey: "",
 };
+
+/** drawState.devkitMode (0x5f2d) flag bits — official 0.2.4 protocol. */
+export const DEVKIT = {
+  ENABLE: 0x1, // keyboard + mouse stats (32-34, 30/31) readable
+  BTN_EMU: 0x2, // mouse buttons drive btn(4)/btn(5)/btn(6)
+  POINTER_TRACK: 0x4, // stat(38/39) relative movement readable
+} as const;
 
 export class Input {
   currentKDown = 0;
@@ -35,6 +57,17 @@ export class Input {
   mouseX = 0;
   mouseY = 0;
   mouseBtns = 0;
+  /** stat(38)/stat(39): movement since the previous sample (host pixels). */
+  mouseDX = 0;
+  mouseDY = 0;
+  /** stat(35): horizontal wheel pixels since the previous sample. */
+  mouseWheelH = 0;
+  /** stat(36): net vertical wheel this sample: 1 up / -1 down / 0. */
+  mouseWheel = 0;
+  /** stat(37): 4 when a click happened since the previous sample, else 0. */
+  mouseAccel = 0;
+  /** previous BTN_EMU level mask, for btnp edges on mouse-driven bits */
+  private prevMouseBtns = 0;
   kbDown = false;
   kbKey = "";
   /** Set by the host after closing the pause menu (vm.cpp:1200-1209). */
@@ -114,7 +147,11 @@ export class Input {
 
   /**
    * Vm::update_buttons (vm.cpp:1193-1225): sample host input, apply pause
-   * clear-on-resume and the devkitMode gate for mouse/keyboard.
+   * clear-on-resume and the devkitMode gate for mouse/keyboard. The gate
+   * follows the official 0.2.4 flag bits (fake-08 only checks != 0; POOM
+   * pokes 7 = ENABLE|BTN_EMU|POINTER_TRACK and needs the finer split):
+   *   0x1 enable mouse/keyboard stats, 0x2 mouse buttons → btn(4..6),
+   *   0x4 stat(38/39) relative movement.
    * Returns true when the pause button (bit 6) fired this frame — the host
    * decides what the pause menu does (fake-08 calls togglePauseMenu here).
    */
@@ -123,19 +160,50 @@ export class Input {
       if ((host.kHeld & 0x30) === 0) this.clearInputOnResume = false;
       this.setState(0, 0);
       this.setMouse(0, 0, 0);
+      this.clearMouseMotion();
       this.setKeyboard(false, "");
       return false;
     }
     this.setState(host.kDown, host.kHeld);
-    if (this.mem.data[0x5f2d] !== 0) {
-      // devkitMode (drawState.devkitMode @ 0x5f2d)
+    const flags = this.mem.data[0x5f2d];
+    if ((flags & DEVKIT.ENABLE) !== 0) {
       this.setMouse(host.mouseX, host.mouseY, host.mouseBtns);
+      // stat(38/39) additionally require the 0x4 pointer-tracking bit
+      const track = (flags & DEVKIT.POINTER_TRACK) !== 0;
+      this.mouseDX = track ? host.mouseDX : 0;
+      this.mouseDY = track ? host.mouseDY : 0;
+      this.mouseWheelH = host.mouseWheelH;
+      this.mouseWheel = host.mouseWheel;
+      this.mouseAccel = host.mouseClicked ? 4 : 0;
       this.setKeyboard(host.kbDown, host.kbKey);
+      if ((flags & DEVKIT.BTN_EMU) !== 0) {
+        // left→btn(4) ❎, right→btn(5) 🅾, middle→btn(6) pause. Level bits
+        // OR into btn(); new bits this sample OR into btnp() edges.
+        const mb =
+          ((host.mouseBtns & 1) ? BIT(4) : 0) |
+          ((host.mouseBtns & 2) ? BIT(5) : 0) |
+          ((host.mouseBtns & 4) ? BIT(6) : 0);
+        this.currentKDown |= mb & ~this.prevMouseBtns;
+        this.currentKHeld |= mb;
+        this.prevMouseBtns = mb;
+      } else {
+        this.prevMouseBtns = 0;
+      }
     } else {
       this.setMouse(0, 0, 0);
+      this.clearMouseMotion();
       this.setKeyboard(false, "");
+      this.prevMouseBtns = 0;
     }
     return (BIT(6) & this.currentKDown) !== 0;
+  }
+
+  private clearMouseMotion(): void {
+    this.mouseDX = 0;
+    this.mouseDY = 0;
+    this.mouseWheelH = 0;
+    this.mouseWheel = 0;
+    this.mouseAccel = 0;
   }
 
   /** Reset repeat counters (cart reload / run). */
@@ -146,6 +214,8 @@ export class Input {
     this.mouseX = 0;
     this.mouseY = 0;
     this.mouseBtns = 0;
+    this.clearMouseMotion();
+    this.prevMouseBtns = 0;
     this.kbDown = false;
     this.kbKey = "";
     this.clearInputOnResume = false;
